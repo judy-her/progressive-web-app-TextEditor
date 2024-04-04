@@ -24,33 +24,19 @@ warmStrategyCache({
   strategy: pageCache,
 });
 
-registerRoute(({ request }) => request.mode === 'navigate', pageCache);
-
-// TODO: Implement asset caching
-// offlineFallback({
-//   pageFallback: '/offline.html', // Path to your offline fallback page
-//   strategy: pageCache,
-// });
-registerRoute();
-
 registerRoute(
-  // Define the pattern for asset requests
-  ({ request }) =>
-    request.destination === 'style' ||
-    request.destination === 'script' ||
-    request.destination === 'image',
-  // Use the CacheFirst strategy for asset caching
-  new CacheFirst({
-    cacheName: 'assets-cache',
+  // callback function that will filter the requests
+  ({ request }) => ['style', 'script', 'worker'].includes(request.destination),
+  new StaleWhileRevalidate({
+    // Name of the cache storage.
+    cacheName: 'asset-cache',
     plugins: [
-      // Cache responses with status 0 and 200
+      // This plugin will cache responses with these headers to a maximum-age of 30 days
       new CacheableResponsePlugin({
         statuses: [0, 200],
-      }),
-      // Set an expiration for cached assets
-      new ExpirationPlugin({
-        maxAgeSeconds: 30 * 24 * 60 * 60, // 30 days
       }),
     ],
   })
 );
+
+registerRoute();

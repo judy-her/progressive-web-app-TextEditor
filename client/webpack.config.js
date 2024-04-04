@@ -3,88 +3,70 @@ const WebpackPwaManifest = require('webpack-pwa-manifest');
 const path = require('path');
 const { InjectManifest } = require('workbox-webpack-plugin');
 
-// TODO: Add and configure workbox plugins for a service worker and manifest file.
-// TODO: Add CSS loaders and babel to webpack.
+module.exports = {
+  mode: 'development',
+  entry: {
+    main: './src/js/index.js',
+    install: './src/js/install.js',
+  },
+  output: {
+    filename: '[name].bundle.js',
+    path: path.resolve(__dirname, 'dist'),
+  },
 
-module.exports = () => {
-  return {
-    mode: 'development',
-    entry: {
-      main: './src/js/index.js',
-      install: './src/js/install.js',
-    },
-    output: {
-      filename: '[name].bundle.js',
-      path: path.resolve(__dirname, 'dist'),
-    },
-    plugins: [
-      // Generate HTML files
-      new HtmlWebpackPlugin({
-        template: './src/index.html',
-        chunks: ['main'],
-        filename: 'index.html',
-      }),
-      // Generate a Web App Manifest
-      new WebpackPwaManifest({
-        name: 'Your App Name',
-        short_name: 'App',
-        description: 'Description of your app',
-        background_color: '#ffffff',
-        theme_color: '#ffffff',
-        crossorigin: 'use-credentials',
-        icons: [
-          {
-            src: path.resolve('src/assets/icon.png'),
-            sizes: [96, 128, 192, 256, 384, 512],
-            destination: path.join('icons'),
-          },
-        ],
-      }),
-      // Inject the service worker into the bundle
-      new InjectManifest({
-        swSrc: './src/sw.js',
-        exclude: [/\.map$/, /manifest\.json$/],
-      }),
-    ],
-    module: {
-      rules: [
-        // CSS loaders
-        {
-          test: /\.css$/,
-          use: ['style-loader', 'css-loader'],
-        },
+  plugins: [
+    // Generate HTML files
+    new HtmlWebpackPlugin({
+      template: './index.html',
+      title: 'text editor',
+    }),
 
-        // Babel loader
+    new InjectManifest({
+      swSrc: './src-sw.js',
+      swDest: 'src-sw.js',
+    }),
+
+    // Generate a Web App Manifest
+    new WebpackPwaManifest({
+      filename: 'manifest.json',
+      fingerprints: false,
+      inject: true,
+      name: 'Text Editor',
+      short_name: 'Jate',
+      description: 'Easy to use text Editor',
+      start_url: './',
+      publicPath: './',
+      icons: [
         {
-          test: /\.js$/,
-          exclude: /node_modules/,
-          use: {
-            loader: 'babel-loader',
-            options: {
-              presets: ['@babel/preset-env'],
-            },
-          },
+          src: path.resolve('src/images/logo.png'),
+          sizes: [96, 128, 192, 256, 384, 512],
+          destination: path.join('assets', 'icons'),
         },
       ],
-    },
-  };
+    }),
+  ],
+
+  module: {
+    rules: [
+      {
+        test: /\.css$/i,
+        use: ['style-loader', 'css-loader'],
+      },
+      {
+        test: /\.m?js$/,
+        exclude: /node_modules/,
+        // We use babel-loader in order to use ES6.
+        use: {
+          loader: 'babel-loader',
+          options: {
+            presets: ['@babel/preset-env'],
+            plugins: [
+              '@babel/plugin-proposal-object-rest-spread',
+              '@babel/transform-runtime',
+            ],
+          },
+        },
+      },
+    ],
+  },
 };
-
-// new HtmlWebpackPlugin() = module.exports = () => {
-//   return {
-//     mode: 'development',
-//     entry: {
-//       main: './src/js/index.js',
-//       install: './src/js/install.js',
-//     },
-// output: {
-//   filename: '[name].bundle.js',
-//   path: path.resolve(__dirname, 'dist'),
-// },
-//     plugins: [],
-
-//     module: {
-//       rules: [],
-//     },
-//   };
-// };
