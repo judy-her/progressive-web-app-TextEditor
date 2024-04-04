@@ -22,10 +22,10 @@ and `npm run build` these will install all dependencies on the client and server
 
 ## Usage
 
-To start this PWA Text Editor simply follow the link given below. Once there ...
-For full access simply click on this link: https://judy-her.github.io/weatherApp/
+To start this PWA Text Editor simply follow the link given below. Once there you click to install the app and you can choose where to save it, on your desktop, or web browser. Type away any notes and save.
+For full access simply click on this link: https://github.com/judy-her/progressive-web-app-TextEditor
 
-![weather-app](assets/weather-app.png)
+![text-editor](./client/src/images/pwa-editor.png)
 
 ## License
 
